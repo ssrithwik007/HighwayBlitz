@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include "player.h"
+#include <iostream>
+#include <cmath>
+
 
 int main()
 {
@@ -9,6 +12,7 @@ int main()
     sf::Sprite road2(t_road);
     road1.setPosition({ 180,0 });
     road2.setPosition({ 180,-799 });
+    float roadSpeed;
 
     sf::Clock clock;
 
@@ -58,14 +62,23 @@ int main()
         float dtAsS = dt.asSeconds();
 
         player.update(dtAsS);
-        road1.setPosition({ road1.getPosition().x,road1.getPosition().y + (player.getspeed() * dtAsS/10) });
-        road2.setPosition({ road2.getPosition().x,road2.getPosition().y + (player.getspeed() * dtAsS/10) });
+        roadSpeed = player.getspeed();
+        road1.setPosition({ road1.getPosition().x,road1.getPosition().y + (roadSpeed * dtAsS/10) });
+        if (road1.getPosition().y >= 0) {
+            road2.setPosition({ road2.getPosition().x,road1.getPosition().y -800 });
+        }
+        else {
+            road2.setPosition({ road2.getPosition().x,road1.getPosition().y + 800 });
+        }
         if (road1.getPosition().y > 800) {
-            road1.setPosition({ road1.getPosition().x,-798 });
+            road1.setPosition({ road1.getPosition().x,-799 });
         }
         if (road2.getPosition().y > 800) {
-            road2.setPosition({ road2.getPosition().x,-798 });
+            road2.setPosition({ road2.getPosition().x,-799 });
         }
+        /*std::cout << "Position of road1: ( " << road1.getPosition().x << " , " << road1.getPosition().y << " )\n";
+        std::cout << "Position of road2: ( " << road2.getPosition().x << " , " << road2.getPosition().y << " )\n";
+        std::cout << "r1 y + r2 y: " << abs(road1.getPosition().y) + abs(road2.getPosition().y) << "\n";*/
 
 
         window.clear();
