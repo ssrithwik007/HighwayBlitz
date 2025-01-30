@@ -4,12 +4,13 @@
 class Player {
 
 private:
+	const float m_xOffset = 180;
 	enum class State { NORMAL, SLIDING };
 	// position of the car
 	sf::Vector2f m_position;
 	//speed of the car
 	float m_speed;
-	float MAX_SPEED = 300;
+	float MAX_SPEED = 1000;
 	// acceleration of the car
 	float m_accln;
 	// deceleration of car
@@ -27,6 +28,7 @@ private:
 	bool m_decelerate;
 	bool m_left;
 	bool m_right;
+	bool m_brake;
 
 public:
 
