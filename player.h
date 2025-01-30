@@ -6,11 +6,12 @@ class Player {
 private:
 	const float m_xOffset = 180;
 	enum class State { NORMAL, SLIDING };
+	State playerState;
 	// position of the car
 	sf::Vector2f m_position;
 	//speed of the car
 	float m_speed;
-	float MAX_SPEED = 1000;
+	float MAX_SPEED = 600;
 	// acceleration of the car
 	float m_accln;
 	// deceleration of car
@@ -38,7 +39,7 @@ public:
 	sf::Sprite getsprite();
 
 	// get position of the player car
-	sf::FloatRect getPosition();
+	sf::FloatRect getBounds();
 	
 	//get speed of player car
 	float getspeed();
@@ -48,6 +49,8 @@ public:
 
 	//get deceleration of player car
 	float getdccln();
+
+	void changePlayerState(State stateChangeTo);
 
 	//update the player car
 	void update(float elapsedTime);

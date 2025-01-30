@@ -149,9 +149,11 @@ sfml-window-s.lib
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="HighwayBlitz.cpp" />
+    <ClCompile Include="oilPatch.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="oilPatch.h" />
     <ClInclude Include="player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

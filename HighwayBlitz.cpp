@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "player.h"
+#include "oilPatch.h"
 #include <iostream>
 #include <cmath>
 
@@ -16,6 +17,8 @@ int main()
     float roadSpeed;
     int score = 0;
 
+    oilPatch m_oilPatch = oilPatch(420);
+
     //font
     sf::Font m_font;
     m_font.openFromFile("fonts/ByteBounce.ttf");
@@ -23,6 +26,7 @@ int main()
     sf::Text m_score(m_font);
     sf::Text m_speed(m_font);
     sf::Text m_fuel(m_font);
+    sf::Text m_gameover(m_font);
     //character size
     int m_charSize = 40;
     m_score.setFillColor(sf::Color::White);
@@ -107,6 +111,9 @@ int main()
         std::cout << "Position of road2: ( " << road2.getPosition().x << " , " << road2.getPosition().y << " )\n";
         std::cout << "r1 y + r2 y: " << abs(road1.getPosition().y) + abs(road2.getPosition().y) << "\n";*/
 
+        srand(time(0));
+        m_oilPatch.updateOilPatch(dtAsS, roadSpeed, rand()%rand());
+
         m_score.setString("Score: " + std::to_string(score));
         m_speed.setString("Speed: " + std::to_string((int)player.getspeed()));
         m_fuel.setString("Fuel: ");
@@ -117,9 +124,29 @@ int main()
         window.draw(road1);
         window.draw(road2);
         window.draw(player.getsprite());
+        window.draw(m_oilPatch.getOilPatch());
         window.draw(m_score);
         window.draw(m_speed);
         window.draw(m_fuel);
+        sf::FloatRect playerBounds = player.getBounds();
+        sf::FloatRect oilBounds = m_oilPatch.getBounds();
+        std::optional<sf::FloatRect> intersection = playerBounds.findIntersection(oilBounds);
+        /*if (intersection.has_value()) {
+            m_gameover.setFillColor(sf::Color::White);
+            m_gameover.setString("GAMEOVER\nPress Enter to exit");
+            m_gameover.setCharacterSize(50);
+            sf::FloatRect bounds = m_gameover.getLocalBounds();
+            sf::Vector2f size = bounds.size;
+            m_gameover.setOrigin({ size.x / 2,size.y / 2 });
+            m_gameover.setPosition({ (float)window.getSize().x / 2, (float)window.getSize().y / 2 });
+            window.draw(m_gameover);
+            window.display();
+            while (true) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+                    window.close();
+            }
+
+        }*/
         window.display();
 
         countFrames++;
