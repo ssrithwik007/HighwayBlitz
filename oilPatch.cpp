@@ -7,7 +7,7 @@ oilPatch::oilPatch(int seed)
 	m_texture.loadFromFile("textures/textures-1.png.png");
 	//initialize the oil  patch
 	m_oilPatch.setTexture(m_texture);
-	m_oilPatch.setTextureRect(sf::IntRect({ 3,54 }, { 24,67 }));
+	m_oilPatch.setTextureRect(sf::IntRect({ 3,54 }, { 22,14 }));
 	m_oilPatch.setScale({ 2.f,2.f });
 	bounds = m_oilPatch.getLocalBounds();
 	size = bounds.size;
@@ -23,7 +23,7 @@ sf::Sprite oilPatch::getOilPatch() {
 }
 
 sf::FloatRect oilPatch::getBounds() {
-	return m_oilPatch.getLocalBounds();
+	return m_oilPatch.getGlobalBounds();
 }
 
 void oilPatch::updateOilPatch(float elapsedTime, float speed, int seed) {

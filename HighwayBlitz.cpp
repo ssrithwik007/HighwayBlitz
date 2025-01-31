@@ -18,6 +18,7 @@ int main()
     int score = 0;
 
     oilPatch m_oilPatch = oilPatch(420);
+    std::cout << "Oil Patch created at position: " << m_oilPatch.getOilPatch().getPosition().x << "," << m_oilPatch.getOilPatch().getPosition().y << "\n";
 
     //font
     sf::Font m_font;
@@ -26,6 +27,7 @@ int main()
     sf::Text m_score(m_font);
     sf::Text m_speed(m_font);
     sf::Text m_fuel(m_font);
+    sf::Text m_crashes(m_font);
     sf::Text m_gameover(m_font);
     //character size
     int m_charSize = 40;
@@ -42,11 +44,20 @@ int main()
     m_fuel.setFillColor(sf::Color::White);
     m_fuel.setString("Fuel: ");
     m_fuel.setCharacterSize(m_charSize);
-    m_fuel.setPosition({ (float)5,(float)5 + m_charSize + m_charSize });
+    m_fuel.setPosition({ (float)5,(float)5 + (2 * m_charSize) });
+
+    m_crashes.setFillColor(sf::Color::White);
+    m_crashes.setString("Crashes: ");
+    m_crashes.setCharacterSize(m_charSize);
+    m_crashes.setPosition({ (float)5,(float)5 + (3 * m_charSize)});
 
     sf::Clock clock;
 
     Player player;
+    float slideTime = 3;
+    const int MAX_CRASHES = 3;
+    int crashes = 0;
+    std::cout << "Player created at position: " << player.getsprite().getPosition().x << "," << player.getsprite().getPosition().y << "\n";
 
     while (window.isOpen())
     {
@@ -54,7 +65,7 @@ int main()
         
         while (const std::optional event = window.pollEvent())
         {
-            if (event->is<sf::Event::Closed>())
+            if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
                 window.close();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
@@ -92,6 +103,12 @@ int main()
 
         float dtAsS = dt.asSeconds();
 
+        sf::FloatRect oilBounds = m_oilPatch.getBounds();
+        if (player.checkCollision(oilBounds) && player.getPlayerState() == "NORMAL") {
+            player.changePlayerState();
+            crashes++;
+        }
+        
         player.update(dtAsS);
         roadSpeed = player.getspeed();
         road1.setPosition({ road1.getPosition().x,road1.getPosition().y + (roadSpeed * dtAsS) });
@@ -117,6 +134,7 @@ int main()
         m_score.setString("Score: " + std::to_string(score));
         m_speed.setString("Speed: " + std::to_string((int)player.getspeed()));
         m_fuel.setString("Fuel: ");
+        m_crashes.setString("Crashes: " + std::to_string(crashes));
 
 
 
@@ -128,10 +146,8 @@ int main()
         window.draw(m_score);
         window.draw(m_speed);
         window.draw(m_fuel);
-        sf::FloatRect playerBounds = player.getBounds();
-        sf::FloatRect oilBounds = m_oilPatch.getBounds();
-        std::optional<sf::FloatRect> intersection = playerBounds.findIntersection(oilBounds);
-        /*if (intersection.has_value()) {
+        window.draw(m_crashes);
+        if (crashes == MAX_CRASHES) {
             m_gameover.setFillColor(sf::Color::White);
             m_gameover.setString("GAMEOVER\nPress Enter to exit");
             m_gameover.setCharacterSize(50);
@@ -142,16 +158,18 @@ int main()
             window.draw(m_gameover);
             window.display();
             while (true) {
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
                     window.close();
             }
 
-        }*/
+        }
         window.display();
 
         countFrames++;
         if (countFrames > 60) {
-            score++;
+            if (player.getspeed() > 0) {
+                score++;
+            }
             countFrames = 0;
         }
     }

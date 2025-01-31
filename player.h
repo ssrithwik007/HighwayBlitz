@@ -1,11 +1,16 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <map>
 
 class Player {
 
 private:
 	const float m_xOffset = 180;
 	enum class State { NORMAL, SLIDING };
+	std::map<State, std::string> stateToString = {
+	{State::NORMAL, "NORMAL"},
+	{State::SLIDING, "SLIDING"}
+	};
 	State playerState;
 	// position of the car
 	sf::Vector2f m_position;
@@ -24,12 +29,15 @@ private:
 	sf::Texture m_texture;
 	// time since last crash or bump
 	sf::Time timeSinceCrash;
+	const float SLIDE_TIME = 1;
+	float slideTime;
 	// controls
 	bool m_accelerate;
 	bool m_decelerate;
 	bool m_left;
 	bool m_right;
 	bool m_brake;
+	int turn;
 
 public:
 
@@ -50,7 +58,9 @@ public:
 	//get deceleration of player car
 	float getdccln();
 
-	void changePlayerState(State stateChangeTo);
+	std::string getPlayerState();
+
+	void changePlayerState();
 
 	//update the player car
 	void update(float elapsedTime);
@@ -64,5 +74,8 @@ public:
 	void Dreleased();
 	void Areleased();
 	void Sreleased();
+
+	//checking collision
+	bool checkCollision(sf::FloatRect objectBounds);
 
 };
