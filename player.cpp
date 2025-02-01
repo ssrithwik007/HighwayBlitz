@@ -143,7 +143,7 @@ void Player::update(float elapsedTime) {
 
 	else if (playerState == State::SLIDING) {
 		m_sprite.rotate(sf::degrees(0.3));
-		m_speed -= 10 * elapsedTime;
+		m_speed -= 300 * elapsedTime;
 		m_sprite.setPosition({ m_sprite.getPosition().x + (50*elapsedTime*turn),m_sprite.getPosition().y });
 		if (m_sprite.getPosition().x < 88 + m_xOffset + 15) {
 			m_sprite.setPosition({ 88 + m_xOffset + 15, 650 });
@@ -153,7 +153,6 @@ void Player::update(float elapsedTime) {
 		}
 		slideTime -= elapsedTime;
 		if (slideTime <= 0) {
-			m_speed = 0;
 			changePlayerState();
 		}
 	}
@@ -162,8 +161,5 @@ void Player::update(float elapsedTime) {
 bool Player::checkCollision(sf::FloatRect objectBounds) {
 	sf::FloatRect playerBounds = m_sprite.getGlobalBounds();
 	std::optional<sf::FloatRect> intersection = playerBounds.findIntersection(objectBounds);
-	if (intersection.has_value()) {
-		return true;
-	}
-	else return false;
+	return intersection.has_value();
 }

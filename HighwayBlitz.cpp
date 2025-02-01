@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "player.h"
 #include "oilPatch.h"
+#include "fuelCan.h"
 #include <iostream>
 #include <cmath>
 
@@ -19,6 +20,8 @@ int main()
 
     oilPatch m_oilPatch = oilPatch(420);
     std::cout << "Oil Patch created at position: " << m_oilPatch.getOilPatch().getPosition().x << "," << m_oilPatch.getOilPatch().getPosition().y << "\n";
+    fuelCan m_fuelCan = fuelCan();
+    std::cout << "Fuel Can created at position: " << m_fuelCan.getFuelCan().getPosition().x << "," << m_fuelCan.getFuelCan().getPosition().y << "\n";
 
     //font
     sf::Font m_font;
@@ -57,11 +60,14 @@ int main()
     float slideTime = 3;
     const int MAX_CRASHES = 3;
     int crashes = 0;
-    std::cout << "Player created at position: " << player.getsprite().getPosition().x << "," << player.getsprite().getPosition().y << "\n";
+    const float MAX_FUEL = 31;
+    float fuel = MAX_FUEL;
+    bool fuelSpawned = false;
 
     while (window.isOpen())
     {
         sf::Time dt = clock.restart();
+        float dtAsS = dt.asSeconds();
         
         while (const std::optional event = window.pollEvent())
         {
@@ -101,12 +107,23 @@ int main()
             player.Dreleased();
         }
 
-        float dtAsS = dt.asSeconds();
+        srand(time(0));
+        if (fuel <= 29 && !(fuelSpawned)) {
+            m_fuelCan.spawnFuelCan(rand());
+            fuelSpawned = true;
+        }
 
         sf::FloatRect oilBounds = m_oilPatch.getBounds();
         if (player.checkCollision(oilBounds) && player.getPlayerState() == "NORMAL") {
             player.changePlayerState();
-            crashes++;
+            //crashes++;
+        }
+
+        sf::FloatRect fuelBounds = m_fuelCan.getBounds();
+        if (player.checkCollision(fuelBounds)) {
+            fuelSpawned = false;
+            fuel += 30;
+            if (fuel > MAX_FUEL)   fuel = MAX_FUEL;
         }
         
         player.update(dtAsS);
@@ -130,10 +147,15 @@ int main()
 
         srand(time(0));
         m_oilPatch.updateOilPatch(dtAsS, roadSpeed, rand()%rand());
+        if (fuelSpawned) {
+            if (!(m_fuelCan.updateFuelCan(dtAsS, roadSpeed))) {
+                fuelSpawned = false;
+            }
+        }
 
         m_score.setString("Score: " + std::to_string(score));
-        m_speed.setString("Speed: " + std::to_string((int)player.getspeed()));
-        m_fuel.setString("Fuel: ");
+        m_speed.setString("Speed: " + std::to_string((int)(player.getspeed()/2)));
+        m_fuel.setString("Fuel: " + std::to_string((int)fuel));
         m_crashes.setString("Crashes: " + std::to_string(crashes));
 
 
@@ -143,11 +165,12 @@ int main()
         window.draw(road2);
         window.draw(player.getsprite());
         window.draw(m_oilPatch.getOilPatch());
+        window.draw(m_fuelCan.getFuelCan());
         window.draw(m_score);
         window.draw(m_speed);
         window.draw(m_fuel);
         window.draw(m_crashes);
-        if (crashes == MAX_CRASHES) {
+        if (fuel <= 0.f) {
             m_gameover.setFillColor(sf::Color::White);
             m_gameover.setString("GAMEOVER\nPress Enter to exit");
             m_gameover.setCharacterSize(50);
@@ -165,6 +188,7 @@ int main()
         }
         window.display();
 
+        fuel -= dtAsS;
         countFrames++;
         if (countFrames > 60) {
             if (player.getspeed() > 0) {
